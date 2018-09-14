@@ -1,0 +1,22 @@
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: owncloud
+  labels:
+    app: owncloud
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: owncloud
+  template:
+    metadata:
+      labels:
+        app: owncloud
+        version: v0.0.1
+    spec:
+      containers:
+      - name: owncloud
+        image: owncloud
+        ports:
+        - containerPort: 80
