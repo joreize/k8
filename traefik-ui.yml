@@ -19,7 +19,7 @@ metadata:
   namespace: kube-system
 spec:
   rules:
-  - host: k8master
+  - host: core.familie-reize.de
     http:
       paths:
       - path: /
