@@ -49,8 +49,10 @@ spec:
   ports:
     - protocol: TCP
       port: 80
+      nodePort: 80
       name: web
     - protocol: TCP
       port: 8080
+      nodePort: 8080
       name: admin
   type: NodePort
