@@ -76,6 +76,9 @@ data:
       [acme.dnsChallenge]
         provider = "cloudflare"
         delayBeforeCheck = 5
+    [[acme.domains]]
+      main = "familie-reize.de"
+      sans = ["owncloud.familie-reize.de", "core.familie-reize.de"]
     [api]
       entryPoint = "traefik"
       dashboard = true
