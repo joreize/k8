@@ -42,6 +42,7 @@ subjects:
   name: traefik-ingress-controller
   namespace: kube-system
 ---
+apiVersion: v1
 kind: ConfigMap
 metadata:
   name: traefik-conf
@@ -54,8 +55,8 @@ data:
       [entryPoints.web]
       address = ":80"
       compress = true
-        [entryPoints.web.redirect]
-        entryPoint = "https"
+      #  [entryPoints.web.redirect]
+      #  entryPoint = "https"
       [entryPoints.https]
       address = ":443"
       compress = true
@@ -70,8 +71,11 @@ data:
     entryPoint = "https"
     onHostRule = true
     acmeLogging = true
-      [acme.httpChallenge]
-      entryPoint = "http"
+    #  [acme.httpChallenge]
+    #  entryPoint = "web"
+      [acme.dnsChallenge]
+        provider = "cloudflare"
+        delayBeforeCheck = 5
     [api]
       entryPoint = "traefik"
       dashboard = true
@@ -106,7 +110,7 @@ spec:
         volumeMounts:
         - mountPath: "/config"
           name: "config"
-        - mountPath: /data/acme/acme.json
+        - mountPath: /acme/acme.json
           name: acme
         ports:
         - name: http
@@ -117,11 +121,22 @@ spec:
           hostPort: 443
         - name: admin
           containerPort: 8080
+        env:
+        - name: CLOUDFLARE_EMAIL
+          valueFrom:
+            secretKeyRef:
+              name: dns-cf-secret
+              key: CLOUDFLARE_EMAIL
+        - name: CLOUDFLARE_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: dns-cf-secret
+              key: CLOUDFLARE_API_KEY
         args:
         - --configfile=/config/traefik.toml
         - --api
         - --kubernetes
-- --logLevel=INFO
+        - --logLevel=INFO
 ---
 kind: Service
 apiVersion: v1
@@ -142,6 +157,6 @@ spec:
       name: admin
     - protocol: TCP
       port: 443
-      nodeport: 443
+      nodePort: 443
       name: https
   type: NodePort
